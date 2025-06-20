@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sismos 24 Horas - Dashboard Digital Moderno</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+       /* Reset básico */
+  * {
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #00e6f6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+    user-select: none;
+  }
+  h2 {
+    text-align: center;
+    color: #00f0ff;
+    text-shadow:
+      0 0 10px #00e6f6,
+      0 0 20px #00b8ff,
+      0 0 30px #00aaff,
+      0 0 40px #00aaff;
+    margin-bottom: 1rem;
+  }
+  nav {
+    background: #05141d;
+    box-shadow: 0 0 20px #00e6f6 inset;
+    padding: 1rem 2rem;
+  }
+  .container-fluid {
+    flex: 1;
+    display: flex;
+    padding: 1rem 2rem;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  /* Contenedores principales */
+  .left-panel, .right-panel {
+    background: rgba(0,30,50,0.6);
+    border: 1px solid #00e6f6;
+    border-radius: 12px;
+    box-shadow:
+      0 0 15px #00e6f6,
+      inset 0 0 20px #00f0ff;
+    padding: 1.5rem 2rem;
+    flex-grow: 1;
+    min-width: 320px;
+  }
+  .left-panel {
+    max-width: 65%;
+  }
+  .right-panel {
+    max-width: 33%;
+    display: flex;
+    flex-direction: column;
+  }
+  #earthquake-alert {
+    background: #002533;
+    border: 2px solid #00e6f6;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow:
+      0 0 10px #00e6f6,
+      0 0 20px #00aaff;
+    color: #00f5ff;
+    font-weight: 700;
+    text-align: center;
+    animation: pulseNeon 2.5s ease-in-out infinite;
+  }
+ @keyframes pulseNeon {
+  0%, 100% {
+    box-shadow:
+      0 0 8px #44baff,
+      0 0 16px #00b7ff;
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 0 12px #66edff,
+      0 0 24px #3392ff;
+    transform: scale(1.01);
+  }
+  }
+  #alert-content {
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.08rem;
+  }
+  #map-container iframe {
+    border-radius: 12px;
+    border: none;
+    box-shadow:
+      0 0 15px #00e6f6;
+    filter: drop-shadow(0 0 3px #00d4ff);
+  }
+  #top-quakes {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .quake-box {
+    flex: 1;
+    background: #004058;
+    border-radius: 10px;
+    padding: 0.8rem;
+    text-align: center;
+    color: #00e6f6;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow:
+      0 0 8px #00dfff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+    user-select: none;
+  }
+  .quake-box:hover {
+    transform: scale(1.1);
+    box-shadow:
+      0 0 18px #00ffff,
+      0 0 40px #00bbff;
+  }
+  .quake-box.red {
+    background: #330000;
+    box-shadow: 0 0 12px #ff4444;
+    color: #ff6666;
+  }
+  .quake-box.yellow {
+    background: #332a00;
+    box-shadow: 0 0 12px #ffcc00;
+    color: #ffec99;
+  }
+  .quake-box.green {
+    background: #003300;
+    box-shadow: 0 0 12px #66ff66;
+    color: #bbffbb;
+  }
+  #probabilidad-container {
+    background: #001a26;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    color: #00ffcc;
+    font-weight: 700;
+    box-shadow:
+      0 0 15px #00e6f6 inset;
+    margin-bottom: 1rem;
+  }
+  #probabilidad-container .card-header {
+    font-size: 1.2rem;
+    letter-spacing: 0.12rem;
+    margin-bottom: 0.5rem;
+  }
+  #probabilidad-container h2 {
+    font-size: 3rem;
+    text-shadow:
+      0 0 8px #00e6f6,
+      0 0 18px #00bbff;
+    margin-bottom: 0;
+  }
+
+  /* NUEVO: Zona caliente estilo */
+  #zona-caliente {
+    background: #220000;
+    border: 2px solid #ff4444;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+    color: #ff6666;
+    font-weight: 900;
+    text-align: center;
+    text-shadow:
+      0 0 8px #ff4444,
+      0 0 20px #ff2222;
+    box-shadow:
+      0 0 12px #ff5555 inset,
+      0 0 18px #ff3333;
+    user-select: none;
+    display: none; /* inicialmente oculto */
+  }
+
+  /* Tabla */
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+      0 0 10px #00e6f6;
+  }
+  thead {
+    background: #005974;
+  }
+  thead th {
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    letter-spacing: 0.1rem;
+    text-align: left;
+    color: #00e6f6;
+    border-bottom: 2px solid #00b8ff;
+  }
+  tbody tr {
+    background: #003f56;
+    transition: background 0.3s ease;
+  }
+  tbody tr:hover {
+    background: #006488;
+    cursor: pointer;
+  }
+  tbody tr.highlight-last {
+    border: 2px solid #00bfff;
+    box-shadow: 0 0 12px #00bfff inset;
+    background: #002f43 !important;
+    color: #00eaff !important;
+  }
+  tbody td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid #004f70;
+  }
+  tbody td a {
+    color: #00e6f6;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  tbody td a:hover {
+    text-decoration: underline;
+  }
+  /* Colores según intensidad */
+  tbody tr.low-mag {
+    background-color: #003300;
+    color: #bbffbb;
+  }
+  tbody tr.mid-mag {
+    background-color: #332a00;
+    color: #ffec99;
+  }
+  tbody tr.high-mag {
+    background-color: #330000;
+    color: #ff6666;
+  }
+  /* Update time */
+  #last-update {
+    text-align: right;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+    color: #0099bb;
+    letter-spacing: 0.1rem;
+  }
+  /* Responsive */
+  @media (max-width: 992px) {
+    .container-fluid {
+      flex-direction: column;
+      padding: 1rem 1rem;
+    }
+    .left-panel, .right-panel {
+      max-width: 100%;
+      flex-grow: 0;
+      margin-bottom: 1.5rem;
+    }
+    #top-quakes {
+      flex-direction: column;
+    }
+    .quake-box {
+      width: 100%;
+      margin-bottom: 0.6rem;
+    }
+  }
+    #timer {
+      text-align: right;
+      font-size: 0.8rem;
+      color: #00bbdd;
+      margin-top: 0.25rem;
+      letter-spacing: 0.1rem;
+    }
+    
+    @keyframes pulse {
+  0%  {
+    box-shadow: 0 0 15px #ff3333 inset, 0 0 25px #ff0000, 0 0 5px #ff0000;
+    transform: scale(1);
+  }
+  10% {
+    box-shadow: 0 0 25px #ff5555 inset, 0 0 40px #ff2222, 0 0 15px #ff4444;
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 15px #ff3333 inset, 0 0 25px #ff0000, 0 0 5px #ff0000;
+    transform: scale(1);
+  }
+}
+
+#top1-quake-alert {
+  animation: pulse 2s infinite;
+}
+    
+  </style>
+</head>
+<body>
+
+  <nav>
+    <h2>Monitoreo de Sismos 24h</h2>
+  </nav>
+
+  <div class="container-fluid">
+    <section class="left-panel">
+      <p id="last-update"></p>
+      <div id="timer">Segundos desde última actualización: 0s</div>
+      <p>Dashboard Monitoreo Sismico 24h</p>
+      <div>Hora en Chile (GMT-4)</div>
+      
+      <br>
+      <div id="earthquakes-table"></div>
+    </section>
+
+    <section class="right-panel">
+
+    <!-- NUEVO: Cuadro Sismo Top 1 -->
+<div id="top1-quake-alert" style="display:none; background:#220000; border:2px solid #ff4444; border-radius:12px; padding:1rem; margin-bottom:1rem; box-shadow:0 0 15px #ff3333 inset, 0 0 25px #ff0000;">
+  <div style="text-align:center; font-weight:900; color:#ff6666; font-size:1.2rem; text-shadow:0 0 10px #ff0000;">Máx Magnitud 24h</div>
+  <div id="top1-quake-content" style="color:#ffaaaa; margin-top:0.5rem;"></div>
+  <div id="top1-map-container" style="margin-top:1rem; height:220px;"></div>
+</div>
+
+
+      <!-- Último Sismo -->
+      <div id="earthquake-alert" style="display:none;">
+        <div><strong>Último Sismo</strong></div>
+        <div id="alert-content"></div>
+        <div id="map-container" style="margin-top: 1rem; height: 220px;"></div>
+      </div>
+
+      <div id="top-quakes"></div>
+      <div id="probabilidad-container"></div>
+      <div id="zona-caliente">Zona caliente de sismo fuerte</div>
+      <h3 style="text-align:center; margin-bottom:0.5rem; color:#00e6f6;">Últimas Noticias de Sismos en el Mundo</h3>
+      <div id="rss-news" style="max-height: 300px; overflow-y: auto; border: 1px solid #00e6f6; border-radius:10px; padding: 1rem; background: #002533; box-shadow: 0 0 10px #00e6f6;"></div>
+      <canvas id="earthquakeChart" style="width: 100%; height: 280px; margin-top: 1rem;"></canvas>
+
+    </section>
+  </div>
+
+  <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+
+  <script>
+    let earthquakeChart, lastKnownEarthquakeId = null;
+    let timer = 0;
+    let timerInterval = null;
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timer = 0;
+      document.getElementById('timer').textContent = `Segundos desde última actualización: ${timer}s`;
+      timerInterval = setInterval(() => {
+        timer++;
+        document.getElementById('timer').textContent = `Segundos desde última actualización: ${timer}s`;
+        if (timer >= 30) timer = 0;
+      }, 1000);
+    }
+
+    async function fetchEarthquakes() {
+      try {
+        startTimer();
+        const response = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson');
+        const data = await response.json();
+
+        const now = new Date();
+        const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        const quakes = data.features.filter(q => new Date(q.properties.time) >= oneDayAgo)
+                                    .sort((a,b)=>b.properties.time - a.properties.time);
+        if (!quakes.length) return;
+
+        const latest = quakes[0];
+        if (lastKnownEarthquakeId !== latest.id) {
+          document.getElementById('alertSound').play();
+        }
+        lastKnownEarthquakeId = latest.id;
+
+        document.getElementById('last-update').textContent = `Actualizado: ${now.toLocaleString()}`;
+        document.getElementById('alert-content').innerHTML =
+          `${new Date(latest.properties.time).toLocaleTimeString()} - Mag ${latest.properties.mag} en ${latest.properties.place}`;
+        document.getElementById('earthquake-alert').style.display = 'block';
+
+        const [lng, lat] = latest.geometry.coordinates;
+        document.getElementById('map-container').innerHTML = `
+          <iframe width="100%" height="220" frameborder="0"
+            src="https://maps.google.com/maps?q=${lat},${lng}&z=5&output=embed"></iframe>`;
+
+        // TOP 3
+        const top3 = [...quakes].sort((a,b)=>b.properties.mag - a.properties.mag).slice(0,3);
+
+        // MOSTRAR CUADRO TOP 1
+        const top1 = top3[0];
+        document.getElementById('top1-quake-content').innerHTML =
+          `${new Date(top1.properties.time).toLocaleTimeString()} - Mag ${top1.properties.mag} en ${top1.properties.place}`;
+        document.getElementById('top1-quake-alert').style.display = 'block';
+        const [topLng, topLat] = top1.geometry.coordinates;
+        document.getElementById('top1-map-container').innerHTML = `
+          <iframe width="100%" height="220" frameborder="0"
+            src="https://maps.google.com/maps?q=${topLat},${topLng}&z=5&output=embed"></iframe>`;
+
+        document.getElementById('top-quakes').innerHTML = top3.map((q,i)=>`
+          <div class="quake-box ${['red','yellow','green'][i]}">
+            <div><strong>Top ${i+1}</strong></div>
+            <div>Mag: ${q.properties.mag}</div>
+            <div>${q.properties.place}</div>
+            <div style="font-size:.8rem;">${new Date(q.properties.time).toLocaleString()}</div>
+          </div>`).join('');
+
+        // TABLA
+        let html = `<table><thead><tr><th>Fecha</th><th>Mag</th><th>Prof(km)</th><th>Ubicación</th></tr></thead><tbody>`;
+        quakes.forEach((q,i)=>{
+          let cls = i===0?'highlight-last':'';
+          const m = q.properties.mag;
+          cls += m>=5?' high-mag':m>=3?' mid-mag':' low-mag';
+          html+= `<tr class="${cls.trim()}">
+            <td>${new Date(q.properties.time).toLocaleString()}</td>
+            <td>${m.toFixed(1)}</td>
+            <td>${q.geometry.coordinates[2].toFixed(1)}</td>
+            <td><a href="https://www.google.com/maps/search/?api=1&query=${q.geometry.coordinates[1]},${q.geometry.coordinates[0]}" target="_blank">${q.properties.place}</a></td>
+          </tr>`;
+        });
+        html += `</tbody></table>`;
+        document.getElementById('earthquakes-table').innerHTML = html;
+
+      } catch(err) {
+        console.error('Error:', err);
+      }
+    }
+
+    function cargarNoticias() {
+      const rssFeedUrl = 'https://news.google.com/rss/search?q=sismo&hl=es&gl=US&ceid=US:es';
+      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssFeedUrl)}`;
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          const contenedor = document.getElementById('rss-news');
+          contenedor.innerHTML = '';
+          data.items.sort((a,b)=> new Date(b.pubDate)-new Date(a.pubDate));
+          data.items.forEach(item => {
+            const noticia = document.createElement('div');
+            noticia.style.marginBottom = '1rem';
+            noticia.innerHTML = `
+              <a href="${item.link}" target="_blank" style="color:#00e6f6; font-weight:700;">${item.title}</a>
+              <div style="font-size:0.8rem; color:#00b8ff;">${new Date(item.pubDate).toLocaleString()}</div>
+            `;
+            contenedor.appendChild(noticia);
+          });
+        })
+        .catch(error => console.error('Error al cargar RSS:', error));
+    }
+
+    cargarNoticias();
+    fetchEarthquakes();
+    setInterval(fetchEarthquakes, 10000);
+    setInterval(cargarNoticias, 10000);
+  </script>
+
+
+</body>
+</html>

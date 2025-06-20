@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cohete espacial con apuestas y avance por clicks</title>
+<style>
+  body {
+    margin: 0;
+    padding: 1rem;
+    background: #000;
+    color: #0ff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 {
+    text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+    margin-bottom: 1rem;
+  }
+
+  #game-container {
+    position: relative;
+    width: 1000px;
+    max-width: 95vw;
+    height: 350px;
+    background: radial-gradient(ellipse at center, #001010 0%, #000000 80%);
+    border: 2px solid #0ff;
+    border-radius: 20px;
+    box-shadow: 0 0 40px #0ff;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  #stars {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: transparent;
+    z-index: 0;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 4px white);
+    animation: twinkle 3s infinite alternate ease-in-out;
+    opacity: 0.8;
+  }
+  @keyframes twinkle {
+    from {opacity: 0.3;}
+    to {opacity: 1;}
+  }
+
+  #rocket {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: 100px;
+    filter: drop-shadow(0 0 16px #0ff);
+    transition: left 0.3s ease-out, bottom 0.3s ease-out;
+    z-index: 10;
+    user-select: none;
+  }
+
+  .trail {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background: #00ffff;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 12px #0ff);
+    opacity: 0.7;
+    animation: fadeTrail 0.9s forwards;
+    pointer-events: none;
+    z-index: 5;
+  }
+  @keyframes fadeTrail {
+    to {
+      opacity: 0;
+      transform: translateX(-30px) translateY(15px);
+    }
+  }
+
+  #moon {
+    position: absolute;
+    top: 20px;
+    right: 10px;
+    width: 120px;
+    filter: drop-shadow(0 0 20px #0ff);
+    user-select: none;
+    z-index: 5;
+  }
+
+  #progress-bar-container {
+    width: 100%;
+    height: 14px;
+    background: #111;
+    border-radius: 12px;
+    box-shadow: inset 0 0 8px #0ff;
+    margin-top: 0.5rem;
+    overflow: hidden;
+  }
+  #progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #00fff7;
+    box-shadow: 0 0 12px #00fff7;
+    border-radius: 12px 0 0 12px;
+    transition: width 0.2s ease;
+  }
+
+  #info {
+    font-size: 1.1rem;
+    min-height: 2.2rem;
+    margin-top: 0.5rem;
+    text-align: center;
+    text-shadow: 0 0 10px #0ff;
+  }
+
+  #bet-buttons {
+    margin: 10px 0;
+    display: flex;
+    gap: 12px;
+  }
+  #bet-buttons button {
+    font-size: 1.3rem;
+    font-weight: 700;
+    padding: 0.7rem 1.3rem;
+    border-radius: 12px;
+    background: #00fff7;
+    color: #002b2b;
+    border: none;
+    box-shadow: 0 0 20px #00fff7;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.3s ease, transform 0.15s ease;
+  }
+  #bet-buttons button:hover:enabled {
+    background: #00ccc0;
+    box-shadow: 0 0 28px #00ccc0;
+  }
+  #bet-buttons button:active:enabled {
+    transform: scale(0.95);
+    box-shadow: 0 0 40px #00fff7 inset;
+    background: #00e5d5;
+  }
+  #bet-buttons button:disabled {
+    background: #002b2b;
+    color: #005050;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  #btn-rocket {
+    font-size: 1.3rem;
+    font-weight: 700;
+    padding: 0.7rem 1.5rem;
+    border-radius: 15px;
+    background: #00fff7;
+    color: #002b2b;
+    border: none;
+    box-shadow: 0 0 25px #00fff7;
+    cursor: not-allowed;
+    user-select: none;
+    margin-top: 1rem;
+    width: 220px;
+  }
+  #btn-rocket.enabled {
+    cursor: pointer;
+    background: #00fff7;
+    box-shadow: 0 0 35px #00fff7;
+    color: #002b2b;
+    pointer-events: auto;
+  }
+  #btn-rocket.enabled:hover {
+    background: #00ccc0;
+    box-shadow: 0 0 45px #00ccc0;
+  }
+  #btn-rocket.enabled:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 50px #00fff7 inset;
+    background: #00e5d5;
+  }
+
+  #timer {
+    font-size: 1.2rem;
+    margin-top: 0.8rem;
+    text-align: center;
+    text-shadow: 0 0 10px #0ff;
+  }
+
+  #status {
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+    text-align: center;
+    min-height: 1.8rem;
+    text-shadow: 0 0 10px #0ff;
+  }
+</style>
+</head>
+<body>
+
+  <h1>Cohete espacial con apuestas</h1>
+
+  <div id="game-container" aria-label="Zona de juego con cohete y luna">
+    <div id="stars"></div>
+    <div id="rocket" style="font-size: 80px; position: absolute; bottom: 10px; left: 10px;">
+      🚀
+    </div>
+    <img id="moon" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/120px-FullMoon2010.jpg" alt="Luna" />
+  </div>
+
+  <div id="progress-bar-container" aria-label="Progreso del cohete">
+    <div id="progress-bar"></div>
+  </div>
+
+  <div id="bet-buttons" aria-label="Botones para apostar">
+    <button data-bet="10">Apostar 10</button>
+    <button data-bet="50">Apostar 50</button>
+    <button data-bet="1000">Apostar 1000</button>
+    <button data-bet="10000">Apostar 10000</button>
+  </div>
+
+  <button id="btn-rocket" disabled>Esperando apuestas...</button>
+
+  <div id="timer" aria-live="polite" aria-atomic="true">Tiempo restante para apostar: 30s</div>
+  <div id="status" aria-live="polite" aria-atomic="true">Monedas: 10000 | Apostado: 0</div>
+  <div id="info" role="alert" aria-live="polite"></div>
+
+<script>
+  const btnAdvance = document.getElementById('btn-rocket');
+  const rocket = document.getElementById('rocket');
+  const starsContainer = document.getElementById('stars');
+  const progressBar = document.getElementById('progress-bar');
+  const info = document.getElementById('info');
+  const status = document.getElementById('status');
+  const timerDisplay = document.getElementById('timer');
+  const betButtons = document.querySelectorAll('#bet-buttons button');
+  const gameContainer = document.getElementById('game-container');
+
+  let coins = 10000;
+  let bet = 0;
+
+  const maxDistanceX = gameContainer.clientWidth - rocket.clientWidth - 20;
+  const maxDistanceY = gameContainer.clientHeight - rocket.clientHeight - 20;
+
+  let currentX = 10;
+  let currentY = 10;
+
+  function createStars(numStars = 100) {
+    starsContainer.innerHTML = '';
+    for(let i = 0; i < numStars; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      const size = Math.random() * 2 + 1;
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+      star.style.animationDelay = `${Math.random() * 3}s`;
+      starsContainer.appendChild(star);
+    }
+  }
+  createStars();
+
+  function createTrail() {
+    const trail = document.createElement('div');
+    trail.classList.add('trail');
+    trail.style.left = (currentX + rocket.clientWidth / 2) + 'px';
+    trail.style.bottom = (currentY + rocket.clientHeight / 3) + 'px';
+    gameContainer.appendChild(trail);
+    setTimeout(() => trail.remove(), 900);
+  }
+
+  betButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const value = Number(button.getAttribute('data-bet'));
+      if (value <= coins) {
+        bet += value;
+        coins -= value;
+        updateStatus();
+        info.textContent = `Has apostado ${bet} monedas.`;
+      } else {
+        info.textContent = `No tienes suficientes monedas para apostar ${value}.`;
+      }
+    });
+  });
+
+  function updateStatus() {
+    status.textContent = `Monedas: ${coins} | Apostado: ${bet}`;
+  }
+  updateStatus();
+
+  let timeLeft = 30;
+  timerDisplay.textContent = `Tiempo restante para apostar: ${timeLeft}s`;
+  let bettingInterval = setInterval(() => {
+    timeLeft--;
+    timerDisplay.textContent = `Tiempo restante para apostar: ${timeLeft}s`;
+    if(timeLeft <= 0) {
+      clearInterval(bettingInterval);
+      endBetting();
+    }
+  }, 1000);
+
+  function endBetting() {
+    betButtons.forEach(btn => btn.disabled = true);
+
+    if (bet === 0) {
+      info.textContent = 'No apostaste nada. Juego terminado.';
+      timerDisplay.textContent = '';
+      btnAdvance.textContent = 'No hay apuesta';
+      btnAdvance.disabled = true;
+      return;
+    }
+
+    info.textContent = `Apuesta cerrada: ${bet} monedas. Puedes avanzar el cohete.`;
+    btnAdvance.disabled = false;
+    btnAdvance.classList.add('enabled');
+    btnAdvance.textContent = 'Avanzar cohete';
+  }
+
+  function avanzar() {
+    if (btnAdvance.disabled) return;
+
+    // Distancia fija por click
+    const stepX = 40;
+    const stepY = 20;
+
+    currentX += stepX;
+    currentY += stepY;
+
+    if (currentX > maxDistanceX) currentX = maxDistanceX;
+    if (currentY > maxDistanceY) currentY = maxDistanceY;
+
+    createTrail();
+
+    rocket.style.left = currentX + 'px';
+    rocket.style.bottom = currentY + 'px';
+
+    let progress = (currentX / maxDistanceX) * 100;
+    if (progress > 100) progress = 100;
+    progressBar.style.width = progress + '%';
+
+    if (progress === 100) {
+      info.textContent = '¡Llegaste a la luna! 🚀🌕';
+      btnAdvance.textContent = 'Juego terminado';
+      btnAdvance.disabled = true;
+      return;
+    }
+
+    info.textContent = `Cohete avanzó. Progreso: ${progress.toFixed(1)}%`;
+  }
+
+  btnAdvance.addEventListener('click', avanzar);
+</script>
+
+</body>
+</html>

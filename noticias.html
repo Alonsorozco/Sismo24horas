@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VIVO24 | Noticias </title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+  /* === Estilos generales === */
+ body {
+  background-color: #060d14;
+  color: #f0f4f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden; /* Asumo que quieres ocultar scroll */
+}
+
+
+  header {
+    background: linear-gradient(90deg, #000000, #06768a);
+    padding: 1rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.75rem;
+    box-shadow: 0 0 12px rgba(29, 161, 242, 0.5);
+    color: #ffffff;
+    margin-bottom: 20px;
+    user-select: none;
+    
+  }
+
+  .content-area {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding-top: 0;
+    height: calc(100vh - 88px);
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding-top: 70px; /* igual a la altura del header fijo */
+  }
+
+  .left-column,
+  .center-column,
+  .right-column {
+    background-color: #040608;
+    border-radius: 30px;
+    padding: 30px;
+    box-shadow: 0 0 12px rgba(29, 161, 242, 0.25);
+    display: flex;
+    flex-direction: column;
+    color: #f0f4f8;
+    transition: box-shadow 0.3s ease;
+    border-color: #fff;
+    border-style: solid;            /* Necesario */
+    border-color: #707070;
+    border-width: 1px;              /* 1rem es demasiado grueso, prueba con 1px o 2px */
+  }
+
+  .left-column, .right-column {
+    flex: 1;
+    max-width: 300px;
+  }
+
+  .center-column {
+    flex: 2;
+    
+  }
+
+  /* Scroll oculto pero funcional */
+  .scrollable-content {
+    overflow-y: auto;
+    flex-grow: 1;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+  }
+  .scrollable-content::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Noticias Internacionales y Chile */
+ .news-internacional, .news-chile {
+  background:  #060d14;
+  color: #ffffff;
+  padding: 16px;
+  border: 1px solid #707070;
+  border-radius: 10px;
+    
+}
+
+
+  
+
+ 
+  .news-internacional .news-title,
+  .news-chile .news-title {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    
+  }
+
+  .news-internacional .news-date,
+  .news-chile .news-date,
+  .news-internacional .news-source,
+  .news-chile .news-source {
+    color: #8899a6;
+    font-size: 0.8rem;
+    margin-top: 20px;
+    
+  
+  }
+
+  .news-internacional a.btn-vermas,
+  .news-chile a.btn-vermas {
+    color: #1DA1F2;
+    border: 1.5px solid #1DA1F2;
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 6px 14px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+    display: inline-block;
+    text-decoration: none;
+    user-select: none;
+  }
+
+  .news-internacional a.btn-vermas:hover,
+  .news-chile a.btn-vermas:hover {
+    background-color: #1DA1F2;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  /* Animación noticia destacada */
+  @keyframes pulseNews {
+    0%, 100% {
+      box-shadow: 0 0 8px #fa0000;
+      border-left-color: #f26b1d;
+    }
+    50% {
+      box-shadow: 0 0 16px #50ff4a;
+      border-left-color: #92ff4a;
+    }
+  }
+
+.center-column .news-item {
+  box-sizing: border-box;
+  background: linear-gradient(to right, #000000, #000000);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 0 auto 10px auto;
+  color: #f0f4f8;
+  border-style: solid;            /* Necesario */
+  border-color: #707070;
+  border-width: 1px;              /* 1rem es demasiado grueso, prueba con 1px o 2px */
+  transition: all 0.3s ease-in-out;
+  font-size: 0.85rem;
+  width: calc(100% - 30px);
+  max-width: 700px;
+
+  
+}
+
+
+
+.center-column .news-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.center-column .news-date {
+  font-size: 0.8rem;
+  color: #b0c4de;
+  margin-top: 6px;
+}
+
+.center-column a.btn-vermas {
+  margin-top: 12px;
+  display: inline-block;
+  background: transparent;
+  border: 1.5px solid #00aaff;
+  color: #00aaff;
+  padding: 6px 14px;
+  border-radius: 25px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+.center-column a.btn-vermas:hover {
+  background: #00aaff;
+  color: #fff;
+}
+
+
+  .ultima-noticia {
+    border-left: 4px solid #1DA1F2;
+    padding: 12px 18px;
+    border-radius: 8px;
+    animation: pulseNews 2.5s infinite ease-in-out;
+    box-sizing: border-box;
+  }
+
+  /* Botones "Bajar" */
+ .scroll-button {
+  background-color: #1DA1F2;
+  border: none;
+  color: white;
+  padding: 6px 0;                /* Menos padding = más pequeño */
+  border-radius: 20px;           /* Menor radio si deseas más compacto */
+  font-weight: 600;              /* Más liviano */
+  cursor: pointer;
+  margin-bottom: 10px;
+  width: 80%;                    /* Más angosto que el 100% */
+  user-select: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: block;
+  text-align: center;
+  font-size: 0.7rem;             /* Tamaño de texto más pequeño */
+  margin-left: auto;
+  margin-right: auto;           /* Centrado si no está dentro de un flex */
+}
+
+
+  .scroll-button:hover {
+    background-color: #0D8CEC;
+    transform: scale(1.05);
+  }
+
+  /* Texto contador actualización */
+  #contador {
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 18px;
+    color: #a5a8a8;
+    font-size: 0.6rem;
+    user-select: none;
+  }
+
+  /* === Estilo widget sismos lado derecho === */
+  #sismos-widget {
+    background-color: #000000;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0 12px rgba(29, 161, 242, 0.25);
+    color: #f0f4f8;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 85vh;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+  }
+  #sismos-widget::-webkit-scrollbar {
+    display: none;
+  }
+
+  #sismos-widget h5 {
+    color: #1DA1F2;
+    font-weight: 700;
+    margin-bottom: 12px;
+    user-select: none;
+  }
+
+  .right-column {
+    max-width: 700px;
+    width: 100%;
+    margin-left: auto;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+
+  /* Estilos para los cuadros de sismos */
+  .sismo-box {
+    background-color: #15202B;
+    border-left: 4px solid #1DA1F2;
+    padding: 12px 18px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(29, 161, 242, 0.35);
+    user-select: text;
+    width: 100%;
+    max-width: 700px;
+    margin-bottom: 18px;
+    box-sizing: border-box;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .sismo-box.red {
+    border-color: #ff4444;
+    box-shadow: 0 0 12px #ff4444;
+    color: #ff9999;
+    animation: pulseRed 2s infinite ease-in-out;
+  }
+
+  .sismo-box.yellow {
+    border-color: #ffcc00;
+    box-shadow: 0 0 12px #ffcc00;
+    color: #fff6a5;
+  }
+
+  .sismo-box.green {
+    border-color: #66ff66;
+    box-shadow: 0 0 12px #66ff66;
+    color: #bbffbb;
+  }
+
+  .sismo-box iframe {
+    margin-top: 10px;
+    border-radius: 10px;
+    width: 100%;
+    height: 180px;
+    border: none;
+    box-shadow: 0 0 12px #1DA1F2;
+  }
+
+  @media (max-width: 1024px) {
+    .content-area {
+      flex-direction: column;
+      height: auto;
+      max-width: 100%;
+      padding: 10px;
+    }
+    .left-column, .center-column, .right-column {
+      max-width: 100%;
+      flex: none;
+      height: 400px;
+      margin-bottom: 20px;
+    }
+    #sismos-widget {
+      max-height: 300px;
+    }
+  }
+
+  @keyframes pulseRed {
+    0%, 100% {
+      box-shadow: 0 0 10px #ff4444;
+      border-color: #ff4444;
+    }
+    50% {
+      box-shadow: 0 0 30px #ff6666;
+      border-color: #ff6666;
+    }
+  }
+
+  /* === Splash Screen === */
+  #splash-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(90deg, #000000, #06768a);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    color: white;
+    font-size: 5rem;
+    font-weight: 900;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+    transition: opacity 0.5s ease;
+  }
+  #splash-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Botón chat */
+  #chat-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #a7f21d;
+    color: #0e0e0e;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 32px;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(29, 161, 242, 0.5);
+    z-index: 1000;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  #chat-button:hover {
+    background-color: #ff0000;
+    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.8);
+  }
+
+  /* Ventana de chat */
+  #chat-window {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 320px;
+    height: 420px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid #030303;
+    border-radius: 12px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 6px 20px rgba(29, 161, 242, 0.6);
+    z-index: 1000;
+  }
+
+  #chat-header {
+    background: #24f21d;
+    color: rgb(2, 2, 2);
+    padding: 12px 16px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+
+  #chat-messages {
+    flex: 1;
+    padding: 12px 16px;
+    overflow-y: auto;
+    background: #0a121c;
+    color: #e0e6f1;
+  }
+
+  #chat-input {
+    display: flex;
+    border-top: 1px solid #0a121c;
+  }
+
+  #chat-input input {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-bottom-left-radius: 12px;
+    background: #15202B;
+    color: #f0f4f8;
+    font-size: 1rem;
+  }
+  #chat-input input::placeholder {
+    color: #8899a6;
+  }
+
+  #chat-input button {
+    padding: 12px 20px;
+    border: none;
+    background: #1DA1F2;
+    color: white;
+    border-bottom-right-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  #chat-input button:hover {
+    background-color: #0d7fc7;
+  }
+
+
+.news-ticker {
+  width: 100%;
+  background: #000000; /* rojo urgente */
+  color: white;
+  font-weight: 700;
+  padding: 10px 0;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+  white-space: nowrap;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.ticker-text {
+  display: inline-block;
+  padding-left: 100%;
+  animation: ticker-slide 10s linear infinite;
+}
+
+@keyframes ticker-slide {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+
+
+</style>
+
+</head>
+<body>
+
+  <!-- Pantalla Splash -->
+  <div id="splash-screen">
+    VIVO24®
+  </div>
+
+  <header class=" fixed-top mb-5 ">VIVO24® | Noticias </header>
+
+  
+
+
+
+  <div class="container content-area mt-5">
+    <!-- Clima (Izquierda) -->
+    <div class="left-column">
+      <span class="badge text-bg-success">Clima en Chile</span>
+        <p id="fechaHora" class="fs-11 text-center"></p>
+      <div id="weather-container" class="scrollable-content">Cargando clima...</div>
+    </div>
+
+    <!-- Noticias (Centro) -->
+    <div class="center-column d-flex flex-column ">
+       <hr class="text-secondary my-3">
+       <div class="">
+</div>
+
+      <span class="badge text-bg-dark mb-4">Noticias Internacionales</span>
+      <div id="mundo-news" class="scrollable-content news-internacional ">Cargando noticias...</div>
+      <button class="scroll-button mt-3" data-target="mundo-news">⬇Bajar</button>
+
+      <hr class="text-secondary my-3">
+      <span class="badge text-bg-light mb-5">Noticias de Chile</span>
+      <div id="chile-news" class="scrollable-content news-chile">Cargando noticias...</div>
+
+     
+
+      <button class="scroll-button mt-3 btn btn-outline-info"data-target="chile-news">⬇Bajar</button>
+       <span id="contador"  class="badge rounded-pill text-bg-secondary">Próxima actualización en: 60 segundos</span>
+    </div>
+
+    <!-- Extra / Sismos (Derecha) -->
+    <div class="right-column">
+      <span class="badge text-bg-danger mb-3 mt-3">🟠 Sismos Dentro 24h</span>
+      <div id="sismos-widget">
+        
+        <div id="sismo-mayor" class="sismo-box red">
+          <strong>Sismo de mayor intensidad 24h:</strong>
+          <div id="mayor-detalle">Cargando...</div>
+          <div id="mayor-mapa"></div>
+        </div>
+        <div id="sismo-ultimo" class="sismo-box yellow">
+          <strong>Último sismo registrado:</strong>
+          <div id="ultimo-detalle">Cargando...</div>
+          <div id="ultimo-mapa"></div>
+        </div>
+        <div id="sismos-top3" class="sismo-box green">
+          <strong>Top 3 sismos por magnitud 24h:</strong>
+          <div id="top3-list">Cargando...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <footer class="fixed-bottom bg-dark text-white text-center">
+    
+     <strong>Último sismo registrado:</strong>
+     <div class="news-ticker">
+       <div  id="ticker-text" class="ticker-text"> </div>
+       <div  id="ticker-text" class="ticker-text"> </div>
+     </div>
+       <!-- Botón flotante -->
+<button id="chat-button" onclick="toggleChat()">💬</button>
+
+
+
+
+<!-- Ventana de chat -->
+<div id="chat-window">
+    <div id="chat-header">
+        <span>Asistente 🔵 VIVO24 | Noticias </span>
+        <button onclick="toggleChat()" style="background:none; border:none; color:white; font-size:18px;">×</button>
+    </div>
+    <div id="chat-messages"></div>
+    <div id="chat-input">
+        <input type="text" id="user-input" placeholder="Hazme una pregunta...">
+        <button id="send-btn" onclick="handleUserInput()">Enviar</button>
+    </div>
+</div>
+  </footer>
+
+  
+
+  <!-- Scripts -->
+  <script>
+    // Ocultar splash luego de 2 segundos y habilitar scroll
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const splash = document.getElementById('splash-screen');
+    if (splash) splash.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }, 2000);
+});
+document.body.style.overflow = 'hidden';
+
+// Datos para clima
+const regiones = [
+  "Santiago, Chile",
+  "Arica, Chile",
+  "Iquique, Chile",
+  "Antofagasta, Chile",
+  "Calama, Chile",
+  "Copiapó, Chile",
+  "La Serena, Chile",
+  "Coquimbo, Chile",
+  "Valparaíso, Chile",
+  "Viña del Mar, Chile",
+  "Rancagua, Chile",
+  "Talca, Chile",
+  "Chillán, Chile",
+  "Concepción, Chile",
+  "Los Ángeles, Chile",
+  "Temuco, Chile",
+  "Valdivia, Chile",
+  "Osorno, Chile",
+  "Puerto Montt, Chile",
+  "Coyhaique, Chile",
+  "Punta Arenas, Chile"
+];
+
+
+const traduccionesClima = {
+  'Sunny': 'Soleado', 'Clear': 'Despejado', 'Partly cloudy': 'Parcialmente nublado',
+  'Cloudy': 'Nublado', 'Overcast': 'Cubierto', 'Mist': 'Neblina',
+  'Patchy rain possible': 'Posible lluvia dispersa', 'Light drizzle': 'Lluvia ligera',
+  'Heavy rain': 'Lluvia intensa', 'Showers': 'Chubascos',
+  'Thundery outbreaks possible': 'Posibles tormentas', 'Snow': 'Nieve' ,'Rain' : 'Lluvia','Light drizzle and rain' : 'Lluvia ligera y llovizna'
+};
+async function cargarClima() {
+  const contenedor = document.getElementById('weather-container');
+  if (!contenedor) return;
+  contenedor.innerHTML = '';
+
+  const hoy = new Date().toLocaleDateString('es-CL', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  for (const region of regiones) {
+    try {
+      const res = await fetch(`https://wttr.in/${encodeURIComponent(region)}?format=j1`);
+      const data = await res.json();
+
+      const condition = data.current_condition[0].weatherDesc[0].value;
+      const tempC = data.current_condition[0].temp_C;
+      const feelsLikeC = data.current_condition[0].FeelsLikeC;
+      const humidity = data.current_condition[0].humidity;
+      const maxTemp = data.weather[0].maxtempC;
+      const minTemp = data.weather[0].mintempC;
+  
+
+      const descEsp = traduccionesClima[condition] || condition;
+
+      const div = document.createElement('div');
+      div.className = 'mb-3 p-2 bg-dark rounded';
+      div.innerHTML = `
+        <strong>${region}</strong><br>
+        Clima: ${descEsp}<br>
+        Humedad: ${humidity}%<br>
+        Maxima: ${maxTemp}°C<br>
+        Minima: ${minTemp}°C<br> 
+      
+      `;
+      contenedor.appendChild(div);
+    } catch (e) {
+      console.error('Error cargando clima:', e);
+    }
+  }
+}
+
+
+// Función para cargar noticias
+let noticiasInternacionales = [];
+let noticiasChile = [];
+async function cargarNoticias(apiUrl, contenedorId, limit = 10) {
+  try {
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+    const contenedor = document.getElementById(contenedorId);
+    if (!contenedor) return;
+    contenedor.innerHTML = '';
+
+    const items = data.articles || data.items || [];
+    if (!items.length) {
+      contenedor.innerHTML = '<p>No hay noticias disponibles.</p>';
+      return;
+    }
+
+    // Obtener fecha actual y hace 2 días
+    const ahora = new Date();
+    const hace2Dias = new Date();
+    hace2Dias.setDate(ahora.getDate() - 2);
+
+    // Filtrar noticias publicadas en los últimos 2 días
+    const noticiasRecientes = items.filter(item => {
+      const fecha = new Date(item.publishedAt || item.pubDate);
+      return fecha >= hace2Dias && fecha <= ahora;
+    });
+
+    if (noticiasRecientes.length === 0) {
+      contenedor.innerHTML = '<p>No hay noticias recientes disponibles.</p>';
+      return;
+    }
+
+    // Guardar noticias según el contenedor
+    if (contenedorId === 'mundo-news') {
+      noticiasInternacionales = noticiasRecientes.slice(0, limit);
+    } else if (contenedorId === 'chile-news') {
+      noticiasChile = noticiasRecientes.slice(0, limit);
+    }
+
+    // Mostrar noticias en el contenedor
+    for (let i = 0; i < Math.min(limit, noticiasRecientes.length); i++) {
+      const item = noticiasRecientes[i];
+      const fecha = new Date(item.publishedAt || item.pubDate);
+      const titulo = item.title || 'Sin título';
+      const link = item.url || item.link || '#';
+
+      if (i === 0) {
+        const tituloDiv = document.createElement('h6');
+        tituloDiv.className = 'titulo-ultima-noticia text-center';
+        tituloDiv.textContent = '';
+        contenedor.appendChild(tituloDiv);
+      }
+
+      const div = document.createElement('div');
+      div.className = 'news-item';
+
+      if (i === 0) {
+        div.classList.add('ultima-noticia');
+      }
+
+      div.innerHTML = `
+        <div class="news-title">${titulo}</div>
+        <div class="news-date">${fecha.toLocaleString('es-CL', { hour12: false })}</div>
+        <a href="${link}" target="_blank" class="btn-vermas">Ver más</a>
+         <div class="d-flex justify-content-end"> 
+           <span class="badge rounded-pill text-bg-dark ">VIVO24® | Noticias</span>
+          </div>
+       
+        
+      `;
+      contenedor.appendChild(div);
+    }
+  } catch (e) {
+    console.error('Error cargando noticias:', e);
+  }
+}
+
+
+// Scroll botón bajar
+document.querySelectorAll('.scroll-button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetId = btn.getAttribute('data-target');
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    target.scrollBy({top: 100, behavior: 'smooth'});
+  });
+});
+
+// Contador actualización
+let tiempoRestante = 60;
+const contador = document.getElementById('contador');
+setInterval(() => {
+  tiempoRestante--;
+  if (tiempoRestante <= 0) {
+    tiempoRestante = 60;
+    cargarTodasLasFuentes();
+  }
+  if (contador) contador.textContent = `Próxima actualización en: ${tiempoRestante} segundos`;
+}, 1000);
+
+// === Sismos ===
+async function fetchEarthquakes() {
+  try {
+    const response = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson');
+    const data = await response.json();
+
+    const now = new Date();
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const quakes = data.features.filter(q => new Date(q.properties.time) >= oneDayAgo)
+                                .sort((a,b)=>b.properties.time - a.properties.time);
+    if (!quakes.length) {
+      document.getElementById('mayor-detalle').textContent = 'No hay datos recientes.';
+      document.getElementById('ultimo-detalle').textContent = 'No hay datos recientes.';
+      document.getElementById('top3-list').textContent = 'No hay datos recientes.';
+      return;
+    }
+
+    const ultimo = quakes[0];
+    const top1 = [...quakes].sort((a,b) => b.properties.mag - a.properties.mag)[0];
+    const top3 = [...quakes].sort((a,b) => b.properties.mag - a.properties.mag).slice(0,3);
+
+    document.getElementById('mayor-detalle').innerHTML = 
+      `${new Date(top1.properties.time).toLocaleString('es-CL', { hour12:false })} - Mag ${top1.properties.mag} en ${top1.properties.place}`;
+    const [lngMayor, latMayor] = top1.geometry.coordinates;
+    document.getElementById('mayor-mapa').innerHTML = `<iframe src="https://maps.google.com/maps?q=${latMayor},${lngMayor}&z=5&output=embed" ></iframe>`;
+
+    document.getElementById('ultimo-detalle').innerHTML = 
+      `${new Date(ultimo.properties.time).toLocaleString('es-CL', { hour12:false })} - Mag ${ultimo.properties.mag} en ${ultimo.properties.place}`;
+    const [lngUlt, latUlt] = ultimo.geometry.coordinates;
+    document.getElementById('ultimo-mapa').innerHTML = `<iframe src="https://maps.google.com/maps?q=${latUlt},${lngUlt}&z=5&output=embed" ></iframe>`;
+
+     document.getElementById('ticker-text').innerHTML = 
+      `${new Date(ultimo.properties.time).toLocaleString('es-CL', { hour12:false })} - Mag ${ultimo.properties.mag} en ${ultimo.properties.place}`;
+
+    const top3Html = top3.map((q,i) => `
+      <div style="margin-bottom:6px;">
+        <strong>Top ${i+1}:</strong> Mag ${q.properties.mag} - ${q.properties.place} <br>
+        <small>${new Date(q.properties.time).toLocaleString('es-CL', { hour12:false })}</small>
+      </div>`).join('');
+    document.getElementById('top3-list').innerHTML = top3Html;
+
+  } catch(err) {
+    console.error('Error al obtener sismos:', err);
+  }
+}
+
+// Datos de experiencia (perfil)
+const conocimientos = {
+
+  "preguntar":"Este chat te sirve para encontrar las ultima noticias nacionales y internacionales, sismos y clima de hoy en Santiago",
+  "sirve":"Este chat te sirve para encontrar las ultima noticias nacionales y internacionales, sismos y clima de hoy en Santiago",
+  
+  "hola":"Buenos días, desde este chat puede preguntar por la ultimos sismos, noticias y clima"
+};
+
+// Función para mostrar mensaje inicial
+function mostrarMensajeInicial() {
+  appendMessage("Asistente", "¡Hola! Soy tu asistente. Pregúntame sobre el clima en Santiago, noticias nacionales, noticias internacionales, Ultimo sismos y más.");
+}
+
+// Modifica toggleChat para mostrar el mensaje la primera vez que se abre
+function toggleChat() {
+  const chatWindow = document.getElementById("chat-window");
+  const isHidden = chatWindow.style.display === "none" || chatWindow.style.display === "";
+  
+  chatWindow.style.display = isHidden ? "flex" : "none";
+  
+  if (isHidden) {
+    // Si se abre el chat, y no hay mensajes aún, mostrar mensaje inicial
+    const chatMessages = document.getElementById("chat-messages");
+    if (chatMessages && chatMessages.children.length === 0) {
+      mostrarMensajeInicial();
+    }
+  }
+}
+
+
+// Añadir mensajes al chat
+function appendMessage(author, text) {
+  const chatMessages = document.getElementById("chat-messages");
+  if (!chatMessages) return;
+  const message = document.createElement("div");
+  message.innerHTML = `<b>${author}:</b> ${text}`;
+  chatMessages.appendChild(message);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Manejar input usuario y generar respuesta
+function handleUserInput() {
+  const inputField = document.getElementById("user-input");
+  if (!inputField) return;
+  const pregunta = inputField.value.trim().toLowerCase();
+  if (pregunta === "") return;
+  appendMessage("Tú", pregunta);
+
+  let respuesta = "No tengo información sobre eso ahora.";
+
+  if (pregunta.includes("clima") || pregunta.includes("tiempo")) {
+    const climaContenedor = document.getElementById("weather-container");
+    const santiagoDiv = climaContenedor
+      ? Array.from(climaContenedor.children).find(div => div.innerHTML.includes("Santiago"))
+      : null;
+    respuesta = santiagoDiv ? santiagoDiv.innerText : "No tengo el clima de Santiago cargado aún.";
+  } else if (pregunta.includes("internacionales") || pregunta.includes("noticias internacionales")) {
+    if (noticiasInternacionales && noticiasInternacionales.length > 0) {
+      const noticia = noticiasInternacionales[0];
+      respuesta = `Última noticia internacional: <a href="${noticia.url || noticia.link}" target="_blank" style="color:#1DA1F2; text-decoration:underline;">${noticia.title}</a>`;
+    } else {
+      respuesta = "No hay noticias internacionales disponibles aún.";
+    }
+  } else if (pregunta.includes("noticias nacional") || pregunta.includes("noticias") ) {
+    if (noticiasChile && noticiasChile.length > 0) {
+      const noticia = noticiasChile[0];
+      respuesta = `Última noticia de Chile: <a href="${noticia.url || noticia.link}" target="_blank" style="color:#1DA1F2; text-decoration:underline;">${noticia.title}</a>`;
+    } else {
+      respuesta = "No hay noticias de Chile disponibles aún.";
+    }
+  } else if (pregunta.includes("sismo") || pregunta.includes("terremoto")) {
+    const sismoDetalle = document.getElementById("ultimo-detalle");
+    const ultimoMapa = document.getElementById("ultimo-mapa").querySelector("iframe");
+    if (sismoDetalle && ultimoMapa) {
+      const src = ultimoMapa.src;
+      const coordsMatch = src.match(/q=([^&]*)/);
+      const coords = coordsMatch ? coordsMatch[1] : null;
+      const mapaLink = coords ? `https://maps.google.com/maps?q=${coords}` : null;
+      respuesta = `Último sismo: ${sismoDetalle.innerText}` +
+        (mapaLink ? ` <a href="${mapaLink}" target="_blank" style="color:#1DA1F2; text-decoration:underline;">Ver mapa</a> Escribe mayor intensidad para ver el ultimo sismo de mayor intensidad ` : "");
+        
+    } else {
+      respuesta = "No tengo datos del último sismo aún.";
+    }
+  } else if (pregunta.includes("mayor")||pregunta.includes("mayor intensidad") ) {
+    const mayorDetalle = document.getElementById("mayor-detalle");
+    const mayorMapa = document.getElementById("mayor-mapa").querySelector("iframe");
+    if (mayorDetalle && mayorMapa) {
+      const src = mayorMapa.src;
+      const coordsMatch = src.match(/q=([^&]*)/);
+      const coords = coordsMatch ? coordsMatch[1] : null;
+      const mapaLink = coords ? `https://maps.google.com/maps?q=${coords}` : null;
+      respuesta = `Sismo de mayor intensidad: ${mayorDetalle.innerText}` +
+        (mapaLink ? ` <a href="${mapaLink}" target="_blank" style="color:#1DA1F2; text-decoration:underline;">Ver mapa</a>` : "");
+    } else {
+      respuesta = "No tengo datos del sismo de mayor intensidad.";
+    }
+  } else if (pregunta.includes("top") && pregunta.includes("sismo")) {
+    const top3 = document.getElementById("top3-list");
+    respuesta = top3 ? `Top 3 sismos:\n${top3.innerText}` : "No tengo datos de los top 3 sismos.";
+  } else {
+    for (const clave in conocimientos) {
+      if (pregunta.includes(clave)) {
+        respuesta = conocimientos[clave];
+        break;
+      }
+    }
+  }
+
+  appendMessage("Asistente", respuesta);
+  inputField.value = "";
+}
+
+// Eventos para enviar mensaje con botón o tecla Enter
+document.addEventListener("DOMContentLoaded", () => {
+  const btnEnviar = document.getElementById("send-btn");
+  const input = document.getElementById("user-input");
+
+  if (btnEnviar) {
+    btnEnviar.addEventListener("click", handleUserInput);
+  }
+  if (input) {
+    input.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleUserInput();
+      }
+    });
+  }
+});
+
+ function actualizarFechaHora() {
+      const ahora = new Date();
+
+      const opciones = {
+        weekday: 'long', // día de la semana
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      };
+
+      // Formato en español
+      const fechaHoraFormateada = ahora.toLocaleString('es-ES', opciones);
+
+      document.getElementById('fechaHora').textContent = fechaHoraFormateada;
+    }
+
+    // Actualizar la fecha y hora cada segundo
+    setInterval(actualizarFechaHora, 1000);
+
+    // Mostrar inmediatamente al cargar la página
+    actualizarFechaHora();
+
+// Cargar todas las fuentes (noticias, clima, sismos)
+async function cargarTodasLasFuentes() {
+  cargarNoticias('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%3Fhl%3Des-419%26gl%3DUS%26ceid%3DUS%3Aes', 'mundo-news');
+  cargarNoticias('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%3Fhl%3Des-419%26gl%3DCL%26ceid%3DCL%3Aes', 'chile-news');
+  cargarClima();
+  fetchEarthquakes();
+}
+
+// Inicializar
+cargarTodasLasFuentes();
+
+// Actualizar cada 60 segundos
+setInterval(cargarTodasLasFuentes, 60000);
+  </script>
+
+
+</body>
+</html>

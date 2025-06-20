@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat de Experiencia Personal</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+        
+        /* Botón flotante */
+        #chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        /* Ventana de chat */
+        #chat-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        #chat-header {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #chat-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+
+        #chat-input {
+            display: flex;
+            border-top: 1px solid #ccc;
+        }
+
+        #chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-bottom-left-radius: 10px;
+        }
+
+        #chat-input button {
+            padding: 10px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-bottom-right-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Botón flotante -->
+<button id="chat-button" onclick="toggleChat()">💬</button>
+
+<!-- Ventana de chat -->
+<div id="chat-window">
+    <div id="chat-header">
+        <span>Asistente de Experiencia</span>
+        <button onclick="toggleChat()" style="background:none; border:none; color:white; font-size:18px;">×</button>
+    </div>
+    <div id="chat-messages"></div>
+    <div id="chat-input">
+        <input type="text" id="user-input" placeholder="Hazme una pregunta...">
+        <button onclick="handleUserInput()">Enviar</button>
+    </div>
+</div>
+
+<script>
+    // Datos de experiencia (personaliza esto según tu perfil)
+    const conocimientos = {
+        "python": "He trabajado varios años en Python, tanto en backend como en machine learning.",
+        "docker": "Tengo experiencia básica en Docker, lo he usado para desplegar proyectos personales.",
+        "aws": "He implementado servicios en AWS, incluyendo EC2, S3 y Lambda.",
+        "ciberseguridad": "Realicé un diplomado en Ciberseguridad en 2023.",
+        "machine learning": "He aplicado Machine Learning en varios proyectos de análisis de datos.",
+        "backend": "Me desempeño principalmente como desarrollador Backend.",
+        "estudios": "Me desempeño principalmente como desarrollador Backend.",
+        "hola":"Buenos dias, e creado esta chata para que me preguntes sobre datos relevante de mi experiencia profesional y estudios"
+    };
+
+    function toggleChat() {
+        const chatWindow = document.getElementById("chat-window");
+        chatWindow.style.display = (chatWindow.style.display === "none" || chatWindow.style.display === "") ? "flex" : "none";
+    }
+
+    function handleUserInput() {
+        const inputField = document.getElementById("user-input");
+        const pregunta = inputField.value.trim().toLowerCase();
+        if (pregunta === "") return;
+        appendMessage("Tú", pregunta);
+        let respuesta = "No tengo experiencia directa en ese tema, pero puedo investigar.";
+        for (const clave in conocimientos) {
+            if (pregunta.includes(clave)) {
+                respuesta = conocimientos[clave];
+                break;
+            }
+        }
+        appendMessage("Yo", respuesta);
+        inputField.value = "";
+    }
+
+    function appendMessage(author, text) {
+        const chatMessages = document.getElementById("chat-messages");
+        const message = document.createElement("div");
+        message.innerHTML = `<b>${author}:</b> ${text}`;
+        chatMessages.appendChild(message);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+</script>
+
+</body>
+</html>

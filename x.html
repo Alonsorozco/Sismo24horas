@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Widget Meganoticias</title>
+</head>
+<body>
+  <h2>Últimos Tweets de Meganoticias</h2>
+
+  <a class="twitter-timeline" href="https://twitter.com/meganoticiascl" data-height="600" data-theme="light">
+    Tweets by @meganoticiascl
+  </a>
+  <a class="twitter-timeline"
+  href="https://twitter.com/TwitterDev"
+  data-width="300"
+  data-height="300">
+Tweets by @TwitterDev
+</a>
+
+twttr.widgets.createShareButton(
+  '/',
+  document.getElementById('container'),
+  {
+    text: 'Hello World'
+  }
+);
+
+  
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</body>
+</html>
